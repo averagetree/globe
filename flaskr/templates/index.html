@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Globe Demo</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@astrouxds/astro-web-components/dist/astro-web-components/astro-web-components.css"
+    />
+    <script
+      type="module"
+      src="https://cdn.jsdelivr.net/npm/@astrouxds/astro-web-components/dist/astro-web-components/astro-web-components.esm.js"
+    ></script>
+
+    <!-- Vue -->
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.13/vue.js"></script> -->
+
+
+<style>
+  * {
+    box-sizing: border-box;
+  }
+  
+  /* Style the body */
+  body {
+        margin: 0;
+        overflow: hidden;
+      }
+  
+  /* Header/logo Title */
+  .header {
+    padding: 0px;
+    text-align: center;
+    background: #1c3f5e;
+    color: white;
+  }
+  
+  /* Style the top navigation bar */
+  .navbar {
+    display: flex;
+    background-color: #333;
+  }
+  
+  /* Style the navigation bar links */
+  .navbar a {
+    color: white;
+    padding: 14px 20px;
+    text-decoration: none;
+    text-align: center;
+  }
+  
+  /* Change color on hover */
+  .navbar a:hover {
+    background-color: #ddd;
+    color: black;
+  }
+  
+  /* Column container */
+  .row {  
+    display: flex;
+    /* flex-wrap: wrap; */
+  }
+  
+  /* Create two unequal columns that sits next to each other */
+  /* Sidebar/left column */
+  .side {
+    flex: 20%;
+    background-color: #1b2d3e;
+    padding: 0px;
+  }
+  
+  /* Main column */
+  .main {
+    flex: 60%;
+    background-color: #172635;
+    padding: 00px;
+  }
+  
+  .side_right {
+    flex: 20%;
+    background-color: #1b2d3e;
+    padding: 0px;
+  }
+
+  /* .collapsible {
+
+
+  } */
+
+
+  /* Fake image, just for this example */
+  .fakeimg {
+    background-color: #aaa;
+    width: 100%;
+    padding: 0px;
+  }
+  
+  /* Footer */
+  .footer {
+    padding: 0px;
+    text-align: center;
+    background: #172635;
+  }
+  
+  /* Responsive layout - when the screen is less than 700px wide, make the two columns stack on top of each other instead of next to each other */
+  /* @media screen and (max-width: 700px) {
+    .row, .navbar {   
+      flex-direction: column;
+    }
+  } */
+  #globe-container {
+        width: 50vw;
+        height:85vh;
+  }
+
+  .collapsible {
+  background-color: #777;
+  color: white;
+  cursor: pointer;
+  padding: 18px;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 15px;
+}
+
+.active, .collapsible:hover {
+  background-color: #555;
+}
+
+.collapsible:after {
+  content: '\002B';
+  color: white;
+  font-weight: bold;
+  float: right;
+  margin-left: 5px;
+}
+
+.active:after {
+  content: "\2212";
+}
+
+.content {
+  padding: 0 18px;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.2s ease-out;
+  background-color: #f1f1f1;
+}
+
+
+  </style>
+  </head>
+
+  <body>
+    <!-- <div id="vm" style="width: 40%; margin: 50px auto 0 auto; text-align: center">
+      <p>{{ greeting }}</p>
+      <p>[[ greeting ]]</p>
+    </div> -->
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="{{ url_for('static', filename='index.js') }}"></script>
+
+
+    <!-- <script src="//unpkg.com/globe.gl" defer></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/globe.gl"></script>
+    <div class="header">
+      <div style="display: flex; flex-flow: column; justify-content: center; margin-bottom:0px; position: relative;">
+        <rux-classification-marking classification="unclassified"></rux-classification-marking>
+      </div>
+      <rux-global-status-bar include-icon="false" app-state="Development" app-state-color="tag1" username="J. Burns" app-domain="Globe" app-name="Dashboard" app-version="0.0 Alpha" menu-icon="apps">
+        <div style="padding: 0%; display: flex; justify-content: center;">
+          <rux-clock date-in=""></rux-clock>
+        </div>
+      </rux-global-status-bar>
+    </div>
+
+  <div class="row">
+    <div class="side" id="side_bar">
+        <div style="display: flex; justify-content: right;">
+          <!-- <rux-button> -->
+            <rux-icon size="large" icon="arrow-left"></rux-icon>
+          <!-- </rux-button> -->
+        </div>
+    </div>
+    <div class="main", id="main_space">
+        <div id="globe-container" style="width: 100%; text-align: center;"></div>
+    </div>
+    <div class="side_right">
+      <div style="display: flex; justify-content: left;">
+        <!-- <rux-button> -->
+          <!-- <div class="collapsible"> -->
+            <rux-icon id="right_panel_btn" size="large" icon="arrow-right" onclick=asyncCall()></rux-icon>
+            <rux-icon id="right_panel_btn2" size="large" icon="arrow-right" onclick=re_gen_data()></rux-icon>
+
+          <!-- </div> -->
+          <!-- </rux-button> -->
+      </div>
+  </div>
+</div>
+  <div class="footer">
+    <div style="display: flex; flex-flow: column; justify-content: center; margin-bottom:0px; position: relative;">
+      <rux-classification-marking classification="unclassified"></rux-classification-marking>
+    </div>
+  </div>
+
+
+    <!-- <div class="app-grid">
+      <div class="grid-zone grid-zone--header">
+          <div style="display: flex; justify-content: center;">
+            <rux-global-status-bar include-icon="false" app-state="Production" app-state-color="tag1" username="J. Burns" app-domain="Globe" app-name="Dashboard" app-version="0.0 Alpha" menu-icon="apps">
+              <div style="padding: 10%; display: flex; justify-content: center;">
+                <rux-clock date-in=""></rux-clock>
+              </div>
+            </rux-global-status-bar>
+          </div>
+        
+          <status-indicators class="status-indicators" status="{{statusData}}"></status-indicators>
+      </div>
+
+
+        <div class="grid-zone grid-zone--main">
+          <div class="grid-zone grid-zone--main__content">
+            <rux-container>
+              <div id="globe-container" style="width: 80%; text-align: center;"></div>
+            </rux-container>
+
+          </div>
+          <div class="grid-zone grid-zone--main__content__lower">
+            <div class="grid-zone grid-zone--main__content__lower__left">
+              <div class="grid-zone__label"></div>
+              <div class="grid-zone__content">
+
+   
+              </div>
+            </div>
+            <div class="grid-zone grid-zone--main__content__lower__right">
+              <ttc-watcher-graph></ttc-watcher-graph>
+            </div>
+          </div>
+        </div> -->
+
+
+    <!-- <script src="./dist/globe.gl/src/globe.js"></script> -->
+
+    <!-- <script src="../../globe.gl"></script> -->
+<!-- 
+    <script>
+    // Gen random data
+      const N = 300;
+      const gData = [...Array(N).keys()].map(() => ({
+        lat: (Math.random() - 0.5) * 180,
+        lng: (Math.random() - 0.5) * 360,
+        size: Math.random() / 3,
+        color: ['red', 'white', 'blue', 'green'][Math.round(Math.random() * 3)]
+      }));
+
+      // const myGlobe = new Globe(document.getElementById('globeViz'))
+      //   .globeImageUrl('//unpkg.com/three-globe/example/img/earth-night.jpg')
+      //   .pointsData(gData);
+      
+      new Globe(document.getElementById('globeViz'))
+        .globeImageUrl('//unpkg.com/three-globe/example/img/earth-night.jpg')
+        .pointsData(gData)
+        .pointAltitude('size')
+        .pointColor('color');
+
+  </script> -->
+
+  <!-- <script lang="ts">
+    import { defineComponent } from "vue";
+    import panel_a from "../components/panel_a.vue";
+    
+    export default defineComponent({
+      name: "App",
+      components: {
+        panel_a,
+      },
+    });
+    </script>
+    
+    <style></style> -->
+
+    <script>
+      // function init_globe()
+
+
+      //function load_globe(){
+        gData = gen_data();
+
+        // Ensure the Globe.gl script is loaded
+        if (typeof Globe !== 'undefined') {
+          // Create the globe instance and attach it to the container
+          var myGlobe = Globe()
+             .globeImageUrl('https://unpkg.com/three-globe@2.35.3/example/img/earth-dark.jpg') // Add Earth texture
+            //.globeImageUrl('https://unpkg.com/three-globe@2.35.3/example/img/earth-blue-marble.jpg') // Add Earth texture
+            // .bumpImageUrl('https://unpkg.com/three-globe/example/img/earth-topology.png') // Add topology
+            .height([document.getElementById('globe-container').offsetHeight])
+            .width([document.getElementById('globe-container').offsetWidth])
+            (document.getElementById('globe-container'));
+          //myGlobe.globe_points = gData;
+          //myGlobe.pointsData = gData
+          myGlobe.pointsData(gData);
+          myGlobe.pointAltitude('size');
+          myGlobe.pointColor('color');
+
+          // myGlobe.controls().autoRotate = true;
+          // myGlobe.controls().autoRotateSpeed = 0.6;
+
+        } else {
+          console.error('Globe.gl library failed to load.');
+        }
+      //}
+
+      // function resolveAfter2Seconds() {
+      //       return new Promise(resolve => {
+      //         setTimeout(() => {
+      //           resolve('resolved')
+      //         }, 2000);
+      //       });
+      //     }
+
+     // async function asyncCall() {
+      //   console.log('calling');
+      //   const result = await resolveAfter2Seconds();
+        
+      //   // Updating the data here
+      //   // gData[0].size = 1
+      //   // gData[0].lat = 30
+      //   // gData[0].color = 'green'
+      //   gData2 = gen_data();
+
+
+      //   // Setting the updated points
+      //   myGlobe.pointsData(gData2)
+
+      //   console.log(myGlobe.pointsData)
+      // }
+
+      //asyncCall();
+   
+      function re_gen_data(){
+        const gData3 = gen_data();
+
+        myGlobe.objectsData(gData3);
+      }
+
+      function gen_data(){
+        const W = 1000;
+
+        var xData = [...Array(W).keys()].map(() => ({
+          lat: (Math.random() - 0.5) * 180,
+          lng: (Math.random() - 0.5) * 360,
+          size: .001,//Math.random() / 3,
+          color: ['red', 'white', 'blue', 'green'][Math.round(Math.random() * 3)],
+        }));
+        return xData
+      }
+
+    </script>
+
+    <!-- <script>
+      var coll = document.getElementsByClassName("collapsible");
+      var i;
+      
+      for (i = 0; i < coll.length; i++) {
+        coll[i].addEventListener("click", function() {
+          this.classList.toggle("active");
+          var content = this.nextElementSibling;
+          if (content.style.maxHeight){
+            content.style.maxHeight = null;
+          } else {
+            content.style.maxHeight = content.scrollHeight + "px";
+          } 
+        });
+      }
+      </script> -->
+  </body>
+</html>
+

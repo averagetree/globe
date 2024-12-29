@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive 3D Globe</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+    #globe-container {
+      width: 100vw;
+      height: 100vh;
+    }
+  </style>
+</head>
+<body>
+  <div id="globe-container"></div>
+
+  <!-- Include the Globe.gl library -->
+  <script src="https://cdn.jsdelivr.net/npm/globe.gl"></script>
+
+  <script>
+    // Ensure the Globe.gl script is loaded
+    if (typeof Globe !== 'undefined') {
+      // Create the globe instance and attach it to the container
+      const myGlobe = Globe()
+        .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-dark.jpg') // Add Earth texture
+        .bumpImageUrl('https://unpkg.com/three-globe/example/img/earth-topology.png') // Add topology
+        (document.getElementById('globe-container'));
+
+      // Optional: Add some points to visualize locations
+      myGlobe.pointsData([
+        { lat: 37.7749, lng: -122.4194, size: 1, color: 'yellow' }, // San Francisco
+        { lat: 48.8566, lng: 2.3522, size: 1, color: 'blue' }       // Paris
+      ]);
+    } else {
+      console.error('Globe.gl library failed to load.');
+    }
+    fetch('dist/globe.gl/example/datasets/ne_110m_populated_places_simple.geojson')
+  ;
+
+
+  </script>
+</body>
+</html>

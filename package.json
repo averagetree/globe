@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@astrouxds/astro-web-components": "^7.24.1",
+    "globe.gl": "^2.34.2"
+  }
+}
