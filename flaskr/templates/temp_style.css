@@ -1,0 +1,93 @@
+* {
+    box-sizing: border-box;
+  }
+ /*
+  /* Style the body */
+  body {
+        margin: 0;
+        overflow: hidden;
+      }
+  
+  /* Header/logo Title */
+  .header {
+    padding: 0px;
+    text-align: center;
+    background: #1c3f5e;
+    color: white;
+  }
+  
+  /* Column container */
+  .row {  
+    display: flex;
+    /* flex-wrap: wrap; */
+  }
+  
+  /* Create two unequal columns that sits next to each other */
+  /* Sidebar/left column */
+  .side {
+    flex: 20%;
+    background-color: #1b2d3e;
+    padding: 010px;
+    overflow-y: auto;
+    overflow-x: auto;
+
+  }
+  
+  /* Main column */
+  .main {
+    flex: 60%;
+    background-color: #172635;
+    padding: 0px;
+  }
+  
+  .side_right {
+    flex: 20%;
+    background-color: #1b2d3e;
+    padding: 10px;
+  }
+  
+  /* Footer */
+  .footer {
+    padding: 0px;
+    text-align: center;
+    background: #172635;
+  }
+  
+  /* Responsive layout - when the screen is less than 700px wide, make the two columns stack on top of each other instead of next to each other */
+  /* @media screen and (max-width: 700px) {
+    .row, .navbar {   
+      flex-direction: column;
+    }
+  } */
+  #globe-container {
+        width: 60vw;
+        height:85vh;
+  }
+
+  #deck-container {
+        width: 60vw;
+        height:85vh;
+  }
+
+.button-list {
+                list-style-type: none;
+                margin: 0 1rem 0 0;
+                padding: 0;
+                display: flex;
+                flex-flow: column;
+            }
+            .button-list li {
+                margin: 0 1rem 1rem 0;
+                display: flex;
+            }
+            .button-list li rux-button:not(:last-child) {
+                margin-right: 1rem;
+            }
+
+.table-container {
+    display: flex;
+    width: calc(100%);          /* Adjust as needed */
+    max-height: 85vh;    /* Set the fixed height */
+    overflow-y: auto;     /* Enable vertical scrolling */
+    overflow-x: auto;     /* Enable vertical scrolling */
+}

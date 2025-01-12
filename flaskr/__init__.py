@@ -1,8 +1,11 @@
 import os
 
-from flask import Flask
+from flask import Flask, jsonify
 from flask_redis import FlaskRedis
 from flask import render_template
+from flask_socketio import SocketIO
+
+socketio = SocketIO(cors_allowed_origins="*")
 
 def create_app(test_config=None):
     # create and configure the app
@@ -31,29 +34,38 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    # a simple page that says hello
-    @app.route('/hello')
-    def hello():
-        return 'Hello, World!'
+    socketio.init_app(app)
 
     @app.route('/')
     def index():
-        return render_template("index.html", **{"greeting": "Hello from Flask!"})
-    # @app.route('/')
-    # def index():
-    #     return redis_client.get('potato')
+        user = {'firstname': "Mr.", 'lastname': "My Fathers's Son"}
+        return render_template("index.html", user=user)
 
     from . import db
     db.init_app(app)
 
     from . import injector
     injector.init_app(app)
+    
+    # from . import socket
+    # socket.init_app(app)
+
+    from .routes import register_routes
+    register_routes(app)
+
+    with app.app_context():
+        from . import socket
+
+    # @app.route('/data', methods=['GET'])
+    # def get_data():
+    #     user = {'firstname': "Mr.", 'lastname': "My Fathers's Son2222"}
+    #     return jsonify(user)
 
     from . import interfacer
     app.register_blueprint(interfacer.bp)
 
-    # from . import injector
-    # app.register_blueprint(injector.bp)
-    # app.add_url_rule('/', endpoint='index')
-
     return app
+
+if __name__ == '__main__':
+    app = create_app()
+    socketio.run(app, debug=True)

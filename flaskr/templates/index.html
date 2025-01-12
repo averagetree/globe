@@ -27,7 +27,7 @@
   * {
     box-sizing: border-box;
   }
-  
+ /*
   /* Style the body */
   body {
         margin: 0;
@@ -42,26 +42,6 @@
     color: white;
   }
   
-  /* Style the top navigation bar */
-  .navbar {
-    display: flex;
-    background-color: #333;
-  }
-  
-  /* Style the navigation bar links */
-  .navbar a {
-    color: white;
-    padding: 14px 20px;
-    text-decoration: none;
-    text-align: center;
-  }
-  
-  /* Change color on hover */
-  .navbar a:hover {
-    background-color: #ddd;
-    color: black;
-  }
-  
   /* Column container */
   .row {  
     display: flex;
@@ -73,32 +53,22 @@
   .side {
     flex: 20%;
     background-color: #1b2d3e;
-    padding: 0px;
+    padding: 010px;
+    overflow-y: auto;
+    overflow-x: auto;
+
   }
   
   /* Main column */
   .main {
-    flex: 60%;
+    flex: 80%;
     background-color: #172635;
-    padding: 00px;
+    padding: 0px;
   }
   
   .side_right {
     flex: 20%;
     background-color: #1b2d3e;
-    padding: 0px;
-  }
-
-  /* .collapsible {
-
-
-  } */
-
-
-  /* Fake image, just for this example */
-  .fakeimg {
-    background-color: #aaa;
-    width: 100%;
     padding: 0px;
   }
   
@@ -116,58 +86,61 @@
     }
   } */
   #globe-container {
-        width: 50vw;
+        width: 60vw;
         height:85vh;
   }
 
-  .collapsible {
-  background-color: #777;
-  color: white;
-  cursor: pointer;
-  padding: 18px;
-  width: 100%;
-  border: none;
-  text-align: left;
-  outline: none;
-  font-size: 15px;
-}
+  #deck-container {
+        width: 80vw;
+        height:85vh;
+  }
 
-.active, .collapsible:hover {
-  background-color: #555;
-}
+.button-list {
+                list-style-type: none;
+                margin: 0 1rem 0 0;
+                padding: 0;
+                display: flex;
+                flex-flow: column;
+            }
+            .button-list li {
+                margin: 0 1rem 1rem 0;
+                display: flex;
+            }
+            .button-list li rux-button:not(:last-child) {
+                margin-right: 1rem;
+            }
 
-.collapsible:after {
-  content: '\002B';
-  color: white;
-  font-weight: bold;
-  float: right;
-  margin-left: 5px;
-}
-
-.active:after {
-  content: "\2212";
-}
-
-.content {
-  padding: 0 18px;
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.2s ease-out;
-  background-color: #f1f1f1;
+.table-container {
+    /* display: flex; */
+    width: calc(100%);          /* Adjust as needed */
+    max-height: 85vh;    /* Set the fixed height */
+    overflow-y: auto;     /* Enable vertical scrolling */
+    overflow-x: auto;     /* Enable vertical scrolling */
 }
 
 
   </style>
+      <script src="https://unpkg.com/deck.gl@^9.0.0-beta.2/dist.min.js"></script>
+      <script src="https://unpkg.com/deck.gl/geo-layers@^9.0.0-beta.2/dist.min.js"></script>
+
+  <link
+      rel="stylesheet"
+      href="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.css"
+  />
+
+
   </head>
 
   <body>
-    <!-- <div id="vm" style="width: 40%; margin: 50px auto 0 auto; text-align: center">
-      <p>{{ greeting }}</p>
-      <p>[[ greeting ]]</p>
-    </div> -->
-
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-    <script src="{{ url_for('static', filename='index.js') }}"></script>
+    <!-- <script src="{{ url_for('static', filename='index.js') }}"></script> -->
+    <script src="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.js"></script>
+
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script type="module" src="../static/index.js"></script>
+    <script type="module" src="../static/deck_map.js"></script>
+
+    <!-- <script src="dist/bundle.js"></script> Include your bundled JavaScript -->
 
 
     <!-- <script src="//unpkg.com/globe.gl" defer></script> -->
@@ -176,34 +149,147 @@
       <div style="display: flex; flex-flow: column; justify-content: center; margin-bottom:0px; position: relative;">
         <rux-classification-marking classification="unclassified"></rux-classification-marking>
       </div>
-      <rux-global-status-bar include-icon="false" app-state="Development" app-state-color="tag1" username="J. Burns" app-domain="Globe" app-name="Dashboard" app-version="0.0 Alpha" menu-icon="apps">
-        <div style="padding: 0%; display: flex; justify-content: center;">
-          <rux-clock date-in=""></rux-clock>
-        </div>
+      <rux-global-status-bar include-icon="true" app-state="Development" app-state-color="tag1" username="J. Burns" app-domain="Globe" app-name="Dashboard" app-version="0.0 Alpha" menu-icon="public">
+        <!-- <div style="padding: 0%; display: flex; justify-content: right;"> -->
+          <rux-tabs id="tab-set-id-1">
+            <rux-tab id="tab-id-1">Deck</rux-tab>
+            <rux-tab id="tab-id-2">Globe</rux-tab>
+            <rux-tab id="tab-id-3" disabled="">Placeholder</rux-tab>
+        </rux-tabs>
+          <rux-clock slot="right-side"date-in=""></rux-clock>
+        <!-- </div> -->
+
       </rux-global-status-bar>
     </div>
 
   <div class="row">
     <div class="side" id="side_bar">
-        <div style="display: flex; justify-content: right;">
-          <!-- <rux-button> -->
-            <rux-icon size="large" icon="arrow-left"></rux-icon>
-          <!-- </rux-button> -->
-        </div>
+      <div class="table-container">
+        <rux-container style="--body-padding: 0;"> 
+          <div slot="header">Streams</div>
+          <rux-accordion id="stream_table">
+            <rux-accordion-item id="server-status-row">
+              <div slot="label">Server Status
+                <rux-status id="server-status-row-status" status="off"></rux-status>
+              </div>
+              <rux-monitoring-icon id="server-status" icon="equipment" label="Server" sublabel="Status" status="standby" notifications="100"></rux-monitoring-icon>
+              <p>Content 1</p>
+            </rux-accordion-item>
+            <rux-accordion-item id="mock-flights-status-row">
+              <div slot="label">Mock Flight Data Status
+                <rux-status id="mock-flights-row-status" status="off"></rux-status>
+              </div>
+              <div> 
+                <rux-button onclick=start_flight_data_stream()>Start Flight Data</rux-button>
+              </div>
+              <div>
+                <rux-button onclick=stop_flight_data_stream()>Stop Flight Data</rux-button>
+              </div>
+            </rux-accordion-item>
+          </rux-accordion>
+          <!-- <rux-button onclick=add_new_stream()>Add Stream</rux-button> -->
+        </rux-container>
+        <rux-container style="--body-padding: 0;"> 
+          <div slot="header">Layers</div>
+          <rux-accordion id="layer_table">
+            <rux-accordion-item id="airport-data-row">
+              <div slot="label">Airport Data
+                <rux-status id="airport-data-row-status" status="off"></rux-status>
+              </div>
+              <div>
+                <rux-input error-text='' id="airport_request_latitude_input" label="Latitude"></rux-input>
+              </div>
+              <div>
+                <rux-input id="airport_request_longitude_input" label="Longitude"></rux-input>
+              </div>
+              <div>
+                <rux-input id="airport_request_radius_input" label="Radius"></rux-input>
+              </div>
+              <div>
+                <rux-button onclick=request_airport_data()>Request Airport Data</rux-button>
+              </div>
+            </rux-accordion-item>     
+          </rux-accordion>
+          <!-- <rux-button onclick=add_new_stream()>Add Layer</rux-button> -->
+        </rux-container>
+        <rux-button onclick=reset_map_layers()>Reset Map</rux-button>
+
+        <!-- <div style="display: flex; justify-content: right;">
+          <rux-table id='airport-table' >
+            <rux-table-header>
+            </rux-table-header>
+            <rux-table-body>
+            </rux-table-body>
+          </rux-table>
+        </div> -->
+      </div>
     </div>
     <div class="main", id="main_space">
-        <div id="globe-container" style="width: 100%; text-align: center;"></div>
+      <rux-tab-panels aria-labelledby="tab-set-id-1">
+        <rux-tab-panel aria-labelledby="tab-id-1">
+          <div id="deck-container"  text-align: center;></div>
+        </rux-tab-panel>
+        <rux-tab-panel aria-labelledby="tab-id-2">
+          <div id="globe-container"  text-align: center;></div>
+        </rux-tab-panel>
+      </rux-tab-panels>
     </div>
-    <div class="side_right">
-      <div style="display: flex; justify-content: left;">
-        <!-- <rux-button> -->
-          <!-- <div class="collapsible"> -->
-            <rux-icon id="right_panel_btn" size="large" icon="arrow-right" onclick=asyncCall()></rux-icon>
-            <rux-icon id="right_panel_btn2" size="large" icon="arrow-right" onclick=re_gen_data()></rux-icon>
-
-          <!-- </div> -->
-          <!-- </rux-button> -->
-      </div>
+    <!-- <div class="side_right"> -->
+      <!-- <div style="display: flex; justify-content: left;">
+        <ul class="button-list">
+          <li>
+          </li>
+          <li>
+            <rux-status id='stream_status' status="off"></rux-status>
+            <div id='stream_status_label' class="label">Off</div>
+          </li>
+          <li>
+          </li>
+          <li>
+            <rux-input name="fltStartTime" label="Start Time"></rux-input>
+          </li>
+          <li>
+            <rux-input name="fltInterval" label="Interval"></rux-input>
+          </li>
+          <li>
+          </li>
+          <li>
+            <form style="padding: 1rem" method="POST" action="/">
+              <div>
+                <rux-select name="keyInput" label="Data">
+                  <rux-option
+                    value="blank"
+                    label="---"
+                  ></rux-option>
+                <rux-option
+                    value="airports"
+                    label="Airports"
+                ></rux-option>
+                <rux-option 
+                    value="other" 
+                    label="Other">
+                </rux-option>
+              </rux-select>
+              </div>
+              <div>
+                <rux-input name="latitudeInput" label="Latitude"></rux-input>
+              </div>
+              <div>
+                <rux-input name="longitudeInput" label="Longitude"></rux-input>
+              </div>
+              <div>
+                <rux-input name="radiusInput" label="Radius"></rux-input>
+              </div>
+              <div class="col-span-6 ml-auto">
+                <rux-button type="submit">Submit</rux-button>
+              </div>
+            </form>
+          </li>
+          <li>
+            <rux-button onclick=load_flight_data()>Load Flight Data</rux-button>
+          </li>
+        </ul>
+      </div> -->
   </div>
 </div>
   <div class="footer">
@@ -290,9 +376,6 @@
     <style></style> -->
 
     <script>
-      // function init_globe()
-
-
       //function load_globe(){
         gData = gen_data();
 
@@ -318,40 +401,8 @@
         } else {
           console.error('Globe.gl library failed to load.');
         }
-      //}
-
-      // function resolveAfter2Seconds() {
-      //       return new Promise(resolve => {
-      //         setTimeout(() => {
-      //           resolve('resolved')
-      //         }, 2000);
-      //       });
-      //     }
-
-     // async function asyncCall() {
-      //   console.log('calling');
-      //   const result = await resolveAfter2Seconds();
-        
-      //   // Updating the data here
-      //   // gData[0].size = 1
-      //   // gData[0].lat = 30
-      //   // gData[0].color = 'green'
-      //   gData2 = gen_data();
 
 
-      //   // Setting the updated points
-      //   myGlobe.pointsData(gData2)
-
-      //   console.log(myGlobe.pointsData)
-      // }
-
-      //asyncCall();
-   
-      function re_gen_data(){
-        const gData3 = gen_data();
-
-        myGlobe.objectsData(gData3);
-      }
 
       function gen_data(){
         const W = 1000;
@@ -365,24 +416,59 @@
         return xData
       }
 
+      function re_gen_data(){
+        const gData3 = gen_data();
+
+        myGlobe.objectsData(gData3);
+      }
+
     </script>
 
-    <!-- <script>
-      var coll = document.getElementsByClassName("collapsible");
-      var i;
-      
-      for (i = 0; i < coll.length; i++) {
-        coll[i].addEventListener("click", function() {
-          this.classList.toggle("active");
-          var content = this.nextElementSibling;
-          if (content.style.maxHeight){
-            content.style.maxHeight = null;
-          } else {
-            content.style.maxHeight = content.scrollHeight + "px";
-          } 
-        });
-      }
-      </script> -->
+<script type="text/javascript">  
+
+  // const socket = io('http://localhost:8000'); // Replace with your backend URL
+
+  // socket.on('connect', () => console.log('Connected to server'));
+  // socket.on('disconnect', () => console.log('Disconnected from server'));
+
+//   socket.emit('custom_event', { message: 'Hello from frontend' });
+
+// // Listen for responses
+//     socket.on('response_event', (data) => {
+//     console.log('Received from server:', data);
+// });
+
+
+// const map = new maplibregl.Map({
+//     container: 'map',
+//     style: 'https://demotiles.maplibre.org/style.json', // OpenStreetMap tiles
+//     center: [-122.45, 37.78], // [longitude, latitude]
+//     zoom: 12,
+//     pitch: 30,
+//     bearing: 0
+// });
+
+</script>
+<script type="module" src="../static/index.js">
+
+const form = document.querySelector('form')
+form.addEventListener('submit', (e) => {
+    e.preventDefault()
+    const formData = new FormData(form)
+
+  //     alert(`
+  //       Key:  ${formData.get('keyInput')}\n
+  //       Lat: ${formData.get('latitudeInput')} \n
+  //       Long:  ${formData.get('longitudeInput')}\n
+  //       Radius:  ${formData.get('radiusInput')}\n
+
+  // `)
+
+  request_airport_data(formData.get('keyInput'), formData.get('latitudeInput'), 
+    formData.get('longitudeInput'), formData.get('radiusInput'))
+  })
+</script>
+
   </body>
 </html>
 

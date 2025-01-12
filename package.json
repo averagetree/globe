@@ -1,6 +1,18 @@
 {
   "dependencies": {
     "@astrouxds/astro-web-components": "^7.24.1",
-    "globe.gl": "^2.34.2"
+    "@deck.gl/core": "^9.0.38",
+    "@deck.gl/geo-layers": "^9.0.38",
+    "@deck.gl/layers": "^9.0.38",
+    "babel-loader": "^9.2.1",
+    "deck": "^0.0.4",
+    "deck.gl": "^9.0.38",
+    "globe.gl": "^2.34.2",
+    "socket.io-client": "^4.8.1"
+  },
+  "devDependencies": {
+    "vite": "^6.0.7",
+    "webpack": "^5.97.1",
+    "webpack-cli": "^6.0.1"
   }
 }

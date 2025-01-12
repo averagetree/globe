@@ -1,37 +1,37 @@
+from flask import Flask
 from flask_redis import FlaskRedis
+
 from datetime import datetime
 
 import click
 from flask import current_app, g
+
+REDIS_URL = "redis://:password@localhost:6379/0"
 
 def init_app(app):
     app.teardown_appcontext(close_db)
     app.cli.add_command(init_db_command)
 
 def get_db():
-    if 'db' not in g:
-        # g.db = sqlite3.connect(
-        #     current_app.config['DATABASE'],
-        #     detect_types=sqlite3.PARSE_DECLTYPES
-        # )
-        # g.db.row_factory = sqlite3.Row
-
-        g.db = FlaskRedis(host='localhost', port=6379, decode_responses=True)
+    # Configure Redis
+    #if 'db' not in g:
+        # g.db = FlaskRedis(host='localhost', port=6379, decode_responses=True)
+    app = Flask(__name__)
+    redis_client = FlaskRedis(app)
     
-    return g.db
+    return redis_client
 
 def init_db():
-    db = get_db()
-
-    # with current_app.open_resource('schema.sql') as f:
-    #     db.executescript(f.read().decode('utf8'))
+    return get_db()
 
 @click.command('init-db')
 def init_db_command():
     """Clear the existing data and create new tables."""
-    init_db()
-    click.echo('Initialized the database.')
-
+    try:
+        init_db()
+        click.echo('Initialized the database.')
+    except:
+        click.echo('Failure')
 
 def close_db(e=None):
     db = g.pop('db', None)
