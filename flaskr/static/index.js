@@ -1,21 +1,25 @@
 import { initialize_deck_map } from './deck_map.js';
-// import { request_airport_data } from './deck_map.js';
 import { update_flight_map } from './deck_map.js';
 import { add_sp_layer } from './deck_map.js';
 import { reset_layers } from './deck_map.js';
 
-import { socket } from './socket.js';
 import { requestDataFromBackend } from './socket.js';
 import { startServerStatusing } from './socket.js';
 import { startStreaming } from './socket.js';
 import { stopStreaming } from './socket.js';
 import { requestLayer } from './socket.js';
+import { requestAvailableStreams } from './socket.js';
+import { requestConnectedStreams } from './socket.js';
+
 
 import { onDataReceived } from './socket.js';
 import { onStatusReceived } from './socket.js';
 import { onLayerReceived } from './socket.js';
+import { onAvailableStreamsReceived } from './socket.js';
+import { onConnectedStreamsReceived } from './socket.js';
 
-// Use the socket for other operations
+let current_stream_id = 0;
+let current_layer_id = 0;
 
 // Call the function when the page loads
 window.onload = () => {
@@ -23,32 +27,223 @@ window.onload = () => {
     start_server_statusing();
 };
 
-// Use the socket for other operations
-// socket.emit('custom_event', { message: 'Hello from the frontend!' });
+// function add_new_stream(){
+//     const accordion_table = document.getElementById('stream_table');
+//     const accordion = document.createElement('div');
 
-function temp(key, lat, long, rad){
-    request_airport_data(key, lat, long, rad)
-}
+//     request_available_streams()
+//     // console.log(available_streams)
 
-function add_new_stream(){
-    const accordion_table = document.getElementById('stream_table');
-    const accordion = document.createElement('div');
+//     accordion.innerHTML = `
+//         <rux-accordion-item>
+//             <div slot="label">New Stream</div>
+//             <rux-icon size="small" id="settings-ethernet-icon" icon="settings-ethernet"></rux-icon>
+//             <rux-icon size="small" id="remove-layer-icon" icon="delete"></rux-icon>
+//             <rux-select label="Available Streams" input-id="dynamic-select" label-id="dynamic-label" name="dynamic" size="small">
+//             <rux-option value="" selected="" label="---"></rux-option>
+//             </rux-select>
+//             <rux-button id='request-stream-btn' onclick=request_stream()>Request Data</rux-button>
+//         </rux-accordion-item>    
+//     `;
 
-    accordion.style.marginBottom = '10px';
-    accordion.innerHTML = `
-        <rux-accordion-item>
-            <div slot="label">New Stream</div>
-            <p>Content 1</p>
-        </rux-accordion-item>    
-    `;
+//     accordion_table.appendChild(accordion);
 
-    accordion_table.appendChild(accordion);
+// }
 
-}
+// function add_new_layer(){
+//     const accordion_table = document.getElementById('layer_table');
+//     const accordion = document.createElement('div');
+
+//     // accordion.style.marginBottom = '5px';
+//     accordion.innerHTML = `
+//         <rux-accordion-item>
+//             <div slot="label">New Layer</div>
+//             <p>Content 1</p>
+//         </rux-accordion-item>    
+//     `;
+
+//     accordion_table.appendChild(accordion);
+// }
+
+document.addEventListener('DOMContentLoaded', () => {
+    const streamsContainer = document.getElementById('stream_table');
+    const layersContainer = document.getElementById('layer_table');
+
+    // Function to add a new dropdown
+    function add_new_stream(id) {
+        current_stream_id = id;
+        request_available_streams()
+        const accordion = document.createElement('div');
+        accordion.innerHTML = `
+            <rux-accordion-item id='stream-acc-${id}'>
+                <rux-status id="stream-select-status-${id}" slot="prefix" status="off"></rux-status>
+                <div slot="label">
+                <p id="stream-label-${id}">New Stream</p></div>
+                <rux-select label="Available Streams" id="stream-select-${id}" input-id="stream-select-${id}" label-id="dynamic-label" name="dynamic" size="small">
+                    <rux-option value="" selected="" label="---"></rux-option>
+                </rux-select>
+                <div class="child-sub-container">
+                    <rux-button id='request-stream-btn' onclick=request_stream(${id})>Request Data</rux-button>
+                </div>
+                <div class="child-sub-container">
+                    <rux-button id='remove-stream-btn' onclick=remove_stream(${id})>Remove Stream</rux-button>
+                </div>
+            </rux-accordion-item>    
+        `;
+
+        streamsContainer.appendChild(accordion);
+    }
+
+    function add_new_layer(id) {
+        current_layer_id = id;
+        // request_available_streams()
+        request_connected_streams()
+        const accordion = document.createElement('div');
+        accordion.innerHTML = `
+            <rux-accordion-item id='layer-acc-${id}'>
+                <rux-status id="layer-select-status-${id}" slot="prefix" status="off"></rux-status>
+                <div slot="label">
+                <p id="stream-label-${id}">New Layer</p></div>
+                <rux-select label="Available Strdeams" id="layer-select-${id}" input-id="layer-select-${id}" label-id="dynamic-label" name="dynamic" size="small">
+                    <rux-option value="" selected="" label="---"></rux-option>
+                </rux-select>
+                <div class="child-sub-container">
+                    <rux-button id='request-layer-btn' onclick=request_layer(${id})>Request Data</rux-button>
+                </div>
+                <div class="child-sub-container">
+                    <rux-button id='remove-layer-btn' onclick=remove_layer(${id})>Remove Layer</rux-button>
+                </div>
+            </rux-accordion-item>    
+        `;
+
+        layersContainer.appendChild(accordion);
+    }
+
+    // Add more dropdowns dynamically
+    document.getElementById('add-stream-icon').addEventListener('click', () => {
+        const currentCount = streamsContainer.children.length + 1;
+        add_new_stream(currentCount);
+    });
+
+    document.getElementById('add-layer-icon').addEventListener('click', () => {
+        const currentCount = layersContainer.children.length + 1;
+        add_new_layer(currentCount);
+    });
+
+    // document.getElementById(`remove-stream-icon-${id}`).addEventListener('click', () => {
+    //     const currentCount = parentContainer.children.length + 1;
+    //     add_new_stream(currentCount);
+    // });
+
+    // Event delegation to handle all dropdowns
+    // parentContainer.addEventListener('change', (event) => {
+    //     if (event.target && event.target.matches('rux-select')) {
+    //         console.log(`Dropdown ${event.target.id} selected value: ${event.target.value}`);
+    //     }
+    // });
+});
+
+// document.addEventListener("DOMContentLoaded", () => {
+//     const icon = document.getElementById("add-layer-icon");
+
+//     // Add a click event listener
+//     icon.addEventListener("click", () => {
+//         add_new_layer()
+//     });
+// });
+
+// const canvas = document.querySelector('canvas');
+
+// canvas.addEventListener('mouseup', (event) => {
+// //   drawing = true;
+// //   const [longitude, latitude] = deck.unproject([event.clientX, event.clientY]);
+// //   drawnShape.push([longitude, latitude]);
+//     console.log("click")
+// });
 
 function start_server_statusing() {
     startServerStatusing()
 }
+
+function request_stream(status_id) {
+    const select_field_id = `stream-select-${status_id}`;
+    const selected_element = document.getElementById(select_field_id);
+    const stream_id = selected_element.value;
+
+    const stream_name = `stream-label-${status_id}`;
+    const stream_name_element = document.getElementById(stream_name);
+
+    stream_name_element.innerText = stream_id
+
+    const status_icon = document.getElementById(`stream-select-status-${status_id}`);
+    status_icon.status = 'standby'
+
+    selected_element.disabled = true;
+
+    startStreaming(status_id, stream_id)
+}
+
+function remove_stream(status_id) {
+    const select_field_id = `stream-select-${status_id}`;
+    const selected_element = document.getElementById(select_field_id);
+    const stream_id = selected_element.value;
+    
+    stopStreaming(stream_id);
+
+    
+    const selected_element2 = document.getElementById(`stream-acc-${status_id}`);
+    selected_element2.remove()
+}
+
+function request_layer(status_id) {
+    console.log('Not yet implemented')
+
+    const select_field_id = `layer-select-${status_id}`;
+    const selected_element = document.getElementById(select_field_id);
+    const stream_id = selected_element.value;
+
+    console.log(stream_id)
+
+    const request_data = {
+        stream_id: stream_id,
+    }
+    //     type: 'airports',
+    //     coordinates: {
+    //         latitude: airport_request_latitude_input.value,
+    //         longitude: airport_request_longitude_input.value
+    //     },
+    //     radius: airport_request_radius_input.value
+    // }
+
+    requestLayer(request_data);
+
+    // const stream_name = `stream-label-${status_id}`;
+    // const stream_name_element = document.getElementById(stream_name);
+
+    // stream_name_element.innerText = stream_id
+
+    // const status_icon = document.getElementById(`stream-select-status-${status_id}`);
+    // status_icon.status = 'standby'
+
+    // selected_element.disabled = true;
+
+    // startStreaming(status_id, stream_id)
+}
+
+function remove_layer(status_id) {
+    //do nothing
+    console.log('Not yet implemented')
+    // const select_field_id = `stream-select-${status_id}`;
+    // const selected_element = document.getElementById(select_field_id);
+    // const stream_id = selected_element.value;
+    
+    // stopStreaming(stream_id);
+
+    
+    // const selected_element2 = document.getElementById(`stream-acc-${status_id}`);
+    // selected_element2.remove()
+}
+
 
 function start_flight_data_stream() {
     const streamId = 'mock-flights';  // You can dynamically generate this ID
@@ -71,7 +266,7 @@ function stop_flight_data_stream() {
 
 }
 
-function request_airport_data() {
+function request_airport_data() { // TODO: remove
     const layerId = 'airport-data';
     const airport_request_latitude_input = document.getElementById('airport_request_latitude_input');
     const airport_request_longitude_input = document.getElementById('airport_request_longitude_input');
@@ -91,6 +286,14 @@ function request_airport_data() {
 
 }
 
+function request_available_streams() {
+    requestAvailableStreams()
+}
+
+function request_connected_streams() {
+    requestConnectedStreams()
+}
+
 onDataReceived((data) => {
     // console.log('Data received in app.js:', data);
     update_flight_map(data)
@@ -98,18 +301,11 @@ onDataReceived((data) => {
 });
 
 onStatusReceived((data) => {
-    // console.log('Server status received:', data);
-    
-    data.forEach(row => {
-        // console.log(row.stream_id)
-        const status_id = row.stream_id + "-row-status"
-        const serverIcon = document.getElementById(status_id);
-        if (row.running == true) {
-            serverIcon.status = 'normal'
-        } else {
-            serverIcon.status = 'standby'
-        }
+    console.log('Server status received:', data);
 
+    data.forEach(row => {
+        const status_icon = document.getElementById(`stream-select-status-${row.status_id}`);
+        status_icon.status = row.status;
     });
 
 });
@@ -117,7 +313,7 @@ onStatusReceived((data) => {
 onLayerReceived((data) => {
     console.log('Layer data received:', data);
 
-    // if (data.type == "airports"){
+    // // if (data.type == "airports"){
         const settings = {
             color: [200, 0, 80, 180],
             pickable: true,
@@ -129,13 +325,45 @@ onLayerReceived((data) => {
         }
 
         add_sp_layer(data, settings)
-        console.log('Layer added');
+    //     console.log('Layer added');
 
-    // }
+    // // }
 
 });
 
-function get_db_data() {
+onAvailableStreamsReceived((data) => {
+    // console.log('Available Streams data received:', data);
+    // const select = document.querySelector('rux-select');
+    const select_id = `stream-select-${current_stream_id}`;
+    console.log(select_id)
+    const select = document.getElementById(select_id);
+
+    data.forEach(stream => {
+        const ruxOption = document.createElement('rux-option');
+        ruxOption.value = stream.stream_value;
+        ruxOption.label = stream.stream_label;
+        select.appendChild(ruxOption);
+    });
+});
+
+onConnectedStreamsReceived((data) => {
+    // console.log('Available Streams data received:', data);
+    // const select = document.querySelector('rux-select');
+    const select_id = `layer-select-${current_layer_id}`;
+    console.log(select_id)
+    const select = document.getElementById(select_id);
+
+    data.forEach(stream => {
+        console.log(stream)
+
+        const ruxOption = document.createElement('rux-option');
+        ruxOption.value = stream.stream_id;
+        ruxOption.label = stream.stream_id;
+        select.appendChild(ruxOption);
+    });
+});
+
+function get_db_data() { // TODO: remove
     const url = '/data/airports'
 
     fetch(url)
@@ -179,14 +407,12 @@ function get_db_data() {
     });
 }
 
-function test_backend() {
-    // socket.emit('custom_event', { message: 'Hello from the frontend!' });
+function test_backend() { // TODO: remove
     requestDataFromBackend(1234567);
 
 }
 
 function reset_map_layers() {
-    // socket.emit('custom_event', { message: 'Hello from the frontend!' });
     reset_layers();
 }
 
@@ -569,10 +795,15 @@ function update_deck_map(data) {
 
 // export { temp };
 // export { test_backend };
-window.temp = temp;
-window.test_backend = test_backend;
+window.test_backend = test_backend; // TODO: remove
 window.reset_map_layers = reset_map_layers;
-window.add_new_stream = add_new_stream;
-window.start_flight_data_stream = start_flight_data_stream;
-window.stop_flight_data_stream = stop_flight_data_stream;
-window.request_airport_data = request_airport_data;
+// window.add_new_stream = add_new_stream;
+window.start_flight_data_stream = start_flight_data_stream; // TODO: remove
+window.stop_flight_data_stream = stop_flight_data_stream; // TODO: remove
+window.request_airport_data = request_airport_data; // TODO: remove
+window.request_available_streams = request_available_streams;
+window.request_stream = request_stream;
+window.remove_stream = remove_stream;
+window.request_layer = request_layer;
+window.remove_layer = remove_layer;
+

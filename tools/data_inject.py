@@ -32,16 +32,16 @@ def run():
     except:
         print('Unable to connect to DB')
 
-    res4 = r.geosearch(
-        "airports",
-        longitude=-122.27652,
-        latitude=37.805186,
-        radius=5,
-        unit="km",
-    )
-    print(res4)
+    # res4 = r.geosearch(
+    #     "airports",
+    #     longitude=-122.27652,
+    #     latitude=37.805186,
+    #     radius=5,
+    #     unit="km",
+    # )
+    # print(res4)
 
-    #ingest_csv(r)
+    ingest_csv(r)
     
 
 if __name__ == '__main__':

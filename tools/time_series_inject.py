@@ -77,48 +77,48 @@ def run():
     except:
         print('Unable to connect to DB')
 
-    # ingest_csv(r)
+    ingest_csv(r)
 
-    # object_ids = ["10837576_flight"]  # List of all object IDs
-    start_time = 1600443068.0
-    end_time =   1600446070.0
-    all_data = []
+    # # object_ids = ["10837576_flight"]  # List of all object IDs
+    # start_time = 1600443068.0
+    # end_time =   1600446070.0
+    # all_data = []
 
-    object_ids = []
+    # object_ids = []
 
-    pattern = "geo:*_flight:latlong"
+    # pattern = "geo:*_flight:latlong"
 
-    # Retrieve matching keys and store them in a Python list
-    keys = list(r.scan_iter(match=pattern))
-    for k in keys:
-        # stk = k.decode('utf-8')
-        match = re.search(r'\d+', k)
-        if match:
-            number = match.group()
-            # print(f"Extracted number: {number}")
-            object_ids.append(number + "_flight")
+    # # Retrieve matching keys and store them in a Python list
+    # keys = list(r.scan_iter(match=pattern))
+    # for k in keys:
+    #     # stk = k.decode('utf-8')
+    #     match = re.search(r'\d+', k)
+    #     if match:
+    #         number = match.group()
+    #         # print(f"Extracted number: {number}")
+    #         object_ids.append(number + "_flight")
 
 
-    for object_id in object_ids:
-        altitude_key = f"geo:{object_id}:altitude"
-        latlong_key = f"geo:{object_id}:latlong"
+    # for object_id in object_ids:
+    #     altitude_key = f"geo:{object_id}:altitude"
+    #     latlong_key = f"geo:{object_id}:latlong"
         
-        altitude_data = r.zrangebyscore(altitude_key, start_time, end_time, withscores=True)
-        # print(altitude_data)
+    #     altitude_data = r.zrangebyscore(altitude_key, start_time, end_time, withscores=True)
+    #     # print(altitude_data)
 
-        for altitude, timestamp in altitude_data:
-            latlong = json.loads(r.hget(latlong_key, timestamp))
+    #     for altitude, timestamp in altitude_data:
+    #         latlong = json.loads(r.hget(latlong_key, timestamp))
 
-            all_data.append({
-                "object_id": object_id,
-                "timestamp": float(timestamp),
-                "latitude": float(latlong["latitude"]),
-                "longitude": float(latlong["longitude"]),
-                "altitude": int(altitude)
-            })
+    #         all_data.append({
+    #             "object_id": object_id,
+    #             "timestamp": float(timestamp),
+    #             "latitude": float(latlong["latitude"]),
+    #             "longitude": float(latlong["longitude"]),
+    #             "altitude": int(altitude)
+    #         })
 
-    print("Queried Data for All Objects:")
-    print(all_data)
+    # print("Queried Data for All Objects:")
+    # print(all_data)
 
 if __name__ == '__main__':
     run()

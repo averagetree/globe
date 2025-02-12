@@ -5,6 +5,8 @@
     "@deck.gl/geo-layers": "^9.0.38",
     "@deck.gl/layers": "^9.0.38",
     "babel-loader": "^9.2.1",
+    "cesium": "^1.125.0",
+    "cesiumjs": "^1.10.0",
     "deck": "^0.0.4",
     "deck.gl": "^9.0.38",
     "globe.gl": "^2.34.2",

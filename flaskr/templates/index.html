@@ -51,11 +51,12 @@
   /* Create two unequal columns that sits next to each other */
   /* Sidebar/left column */
   .side {
-    flex: 20%;
+    width: 20%;
     background-color: #1b2d3e;
     padding: 010px;
     overflow-y: auto;
     overflow-x: auto;
+    margin: 0 auto;
 
   }
   
@@ -113,10 +114,41 @@
 .table-container {
     /* display: flex; */
     width: calc(100%);          /* Adjust as needed */
-    max-height: 85vh;    /* Set the fixed height */
+    max-height: 50vh;    /* Set the fixed height */
     overflow-y: auto;     /* Enable vertical scrolling */
     overflow-x: auto;     /* Enable vertical scrolling */
 }
+
+/* .centered-container {
+/*  width: 100%; /* Child div takes 100% of the parent width */
+/*  height: 100%; /* Optional: Adjust heigh  /* display: flex; */
+/*  display: flex;
+/*  justify-content: center; /* Centers horizontally */
+/*  align-items: center; /* Centers vertically */
+/* } */
+
+.parent-container {
+  display: flex;
+  flex-direction: column; /* Stack children vertically */
+  gap: 5px; /* Add space between child containers */
+  width: 20%; /* Adjust width as needed */
+  margin: 0 auto; /* Center parent container */
+  padding: 10px; /* Optional spacing */
+  overflow-y: auto;
+  max-height: 85vh;
+}
+
+.child-container {
+  text-align: center; /* Center text inside */
+  padding: 5px;
+}
+
+.child-sub-container {
+  text-align: center; /* Center text inside */
+  padding: 5px;
+  margin: 0 auto; /* Center parent container */
+}
+
 
 
   </style>
@@ -132,7 +164,7 @@
   </head>
 
   <body>
-    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script> -->
     <!-- <script src="{{ url_for('static', filename='index.js') }}"></script> -->
     <script src="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.js"></script>
 
@@ -163,39 +195,56 @@
     </div>
 
   <div class="row">
-    <div class="side" id="side_bar">
-      <div class="table-container">
-        <rux-container style="--body-padding: 0;"> 
-          <div slot="header">Streams</div>
+    <div class="parent-container id="side_bar">
+      <!-- <div class="table-container"> -->
+        <rux-container class="child-container" style="--body-padding: 5px;"> 
+          <div slot="header">Streams
+            <div>
+              <rux-tooltip message="Add Stream" placement="bottom" delay="800" strategy="absolute" offset="8" disable-auto-update="false" open="false">
+                <rux-icon size="small" id="add-stream-icon" icon="playlist-add"></rux-icon>
+              </rux-tooltip>
+            </div>
+          </div>
           <rux-accordion id="stream_table">
-            <rux-accordion-item id="server-status-row">
+            <!-- <rux-accordion-item id="server-status-row">
+              <rux-status id="server-status-row-status" slot="prefix" status="off"></rux-status>
               <div slot="label">Server Status
-                <rux-status id="server-status-row-status" status="off"></rux-status>
               </div>
               <rux-monitoring-icon id="server-status" icon="equipment" label="Server" sublabel="Status" status="standby" notifications="100"></rux-monitoring-icon>
               <p>Content 1</p>
             </rux-accordion-item>
             <rux-accordion-item id="mock-flights-status-row">
+              <rux-status id="mock-flights-row-status" slot="prefix" status="off"></rux-status>
               <div slot="label">Mock Flight Data Status
-                <rux-status id="mock-flights-row-status" status="off"></rux-status>
               </div>
-              <div> 
+              <div class="child-sub-container"> 
                 <rux-button onclick=start_flight_data_stream()>Start Flight Data</rux-button>
               </div>
-              <div>
+              <div class="child-sub-container">
                 <rux-button onclick=stop_flight_data_stream()>Stop Flight Data</rux-button>
               </div>
-            </rux-accordion-item>
+            </rux-accordion-item> -->
           </rux-accordion>
-          <!-- <rux-button onclick=add_new_stream()>Add Stream</rux-button> -->
         </rux-container>
-        <rux-container style="--body-padding: 0;"> 
-          <div slot="header">Layers</div>
+        <rux-container class="child-container" style="--body-padding: 5px;"> 
+          <div slot="header">Layers
+          <div>
+            <rux-tooltip message="Add Layer" placement="bottom" delay="800" strategy="absolute" offset="8" disable-auto-update="false" open="false">
+              <rux-icon size="small" id="add-layer-icon" icon="playlist-add"></rux-icon>
+            </rux-tooltip>
+          </div>
+        </div>
           <rux-accordion id="layer_table">
             <rux-accordion-item id="airport-data-row">
+              <rux-status id="airport-data-row-status" slot="prefix" status="off"></rux-status>
               <div slot="label">Airport Data
-                <rux-status id="airport-data-row-status" status="off"></rux-status>
               </div>
+              <div>
+                <rux-tooltip message="Remove Layer" placement="bottom" delay="800" strategy="absolute" offset="8" disable-auto-update="false" open="false">
+                  <rux-icon size="small" id="remove-layer-icon" icon="delete"></rux-icon>
+                </rux-tooltip>
+              </div>
+              <rux-container class="child-container" style="--body-padding: 5px;">
               <div>
                 <rux-input error-text='' id="airport_request_latitude_input" label="Latitude"></rux-input>
               </div>
@@ -206,13 +255,19 @@
                 <rux-input id="airport_request_radius_input" label="Radius"></rux-input>
               </div>
               <div>
+                <div class="child-sub-container">
                 <rux-button onclick=request_airport_data()>Request Airport Data</rux-button>
               </div>
+              </div>
+            </rux-container>
             </rux-accordion-item>     
           </rux-accordion>
-          <!-- <rux-button onclick=add_new_stream()>Add Layer</rux-button> -->
         </rux-container>
-        <rux-button onclick=reset_map_layers()>Reset Map</rux-button>
+        <rux-container class="child-container" style="--body-padding: 5px;"> 
+          <div class="child-sub-container">
+            <rux-button onclick=reset_map_layers()>Reset Map</rux-button>
+          </div>
+        </rux-container>
 
         <!-- <div style="display: flex; justify-content: right;">
           <rux-table id='airport-table' >
@@ -222,7 +277,7 @@
             </rux-table-body>
           </rux-table>
         </div> -->
-      </div>
+      <!-- </div> -->
     </div>
     <div class="main", id="main_space">
       <rux-tab-panels aria-labelledby="tab-set-id-1">

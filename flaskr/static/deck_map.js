@@ -134,11 +134,34 @@ function update_flight_map(data) {
 
 function add_sp_layer(data, layer_settings) { 
     // const updatedData = mergeData(data);
+    
+    const featuresArray = Object.values(data);
+    
+    // console.log(featuresArray)
+
+    // const scatterData = featuresArray.map(feature => ({
+    //     position: feature.geometry.coordinates.map(Number), // Convert coordinates to numbers
+    //     ...feature.properties // Include all properties
+    //   }));
+
+    featuresArray.forEach(obj => {
+        console.log(`${obj}`);
+    });
+
+    const scatterData = featuresArray
+    .filter(feature => feature.geometry && feature.geometry.coordinates) // Ensure valid geometry
+    .map(feature => ({
+      position: feature.geometry.coordinates.map(Number), // Convert coordinates to numbers
+      ...feature.properties // Include all properties
+    }));
+
+    // console.log(scatterData);
+
 
     const sp_layer = new deck.ScatterplotLayer({
-        id: data.id,
-        data: data,
-        getPosition: d => [d.coordinates.longitude, d.coordinates.latitude],
+        id: 'tmp',
+        data: scatterData,
+        getPosition: d => d.position,
         getRadius: 5,
         // getRadius: d => d.distance * 1000, // Adjust radius based on distance
         getFillColor: d => layer_settings.color, // Blue color with transparency

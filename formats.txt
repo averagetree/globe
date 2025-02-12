@@ -1,0 +1,38 @@
+layer
+
+{
+    "id"
+    "type"
+    "coordinates"
+        "latitude"
+        "longitude"
+    "radius"
+}
+
+layer settings
+
+{
+    "color"
+    "pickable"
+    "opacity"
+    "radiusScale"
+    "radiusMin"
+    "radiusMax"
+
+}
+
+
+id: d.id,
+data: updatedData,
+getPosition: d => [d.coordinates.longitude, d.coordinates.latitude],
+getRadius: 5,
+// getRadius: d => d.distance * 1000, // Adjust radius based on distance
+getFillColor: d => getColorBasedOnAltitude(d.altitude), // Blue color with transparency
+pickable: true,
+opacity: 0.8,
+radiusScale: 5,  // make the dots visible or darker background
+radiusMinPixels: 5, // make the dots visible or darker background
+radiusMaxPixels: 15,
+
+Redis 
+
